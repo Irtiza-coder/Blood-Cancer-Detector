@@ -1,0 +1,177 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CellScan AI - Early Cancer Detection</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'detector/css/style.css' %}">
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'index' %}">
+                <i class="fa-solid fa-dna"></i> CellScan AI
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center">
+                    <li class="nav-item"><a class="nav-link active" href="{% url 'index' %}">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'check' %}">Analyze</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'info' %}">Information</a></li>
+                   
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <h1 class="hero-title">Early Detection Saves Lives.</h1>
+                    <p class="hero-subtitle">
+                        Analyze your blood cell images instantly with our advanced AI model. Accurate, fast, and secure screening for early peace of mind.
+                    </p>
+                    <div class="d-flex gap-3">
+                        <a href="{% url 'check' %}" class="btn btn-primary btn-lg">Start Analysis</a>
+                        <a href="{% url 'info' %}" class="btn btn-outline-primary btn-lg">Learn More</a>
+                    </div>
+                </div>
+                <div class="col-lg-6 mt-5 mt-lg-0 text-center">
+                    <img src="https://placehold.co/600x400/e6f2ff/0A4DAA?text=AI+Analysis+Visualization" alt="AI Analysis" class="img-fluid rounded-3 shadow-lg">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Trust/Benefits Section -->
+    <section class="py-5">
+        <div class="container py-4">
+            <div class="row text-center mb-5">
+                <div class="col-lg-8 mx-auto">
+                    <h2 class="mb-3">Why Trust CellScan AI?</h2>
+                    <p class="text-muted">Built with cutting-edge deep learning technology and verified by medical professionals.</p>
+                </div>
+            </div>
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="trust-card">
+                        <div class="icon-box">
+                            <i class="fa-solid fa-bullseye"></i>
+                        </div>
+                        <h4>96.7% Accuracy</h4>
+                        <p class="text-muted small">Our model has been trained on over 3000 + clinically annotated images to ensure high precision.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="trust-card">
+                        <div class="icon-box">
+                            <i class="fa-solid fa-user-doctor"></i>
+                        </div>
+                        <h4>Doctor Reviewed</h4>
+                        <p class="text-muted small">Developed in collaboration with hematologists to meet rigorous medical standards.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="trust-card">
+                        <div class="icon-box">
+                            <i class="fa-solid fa-shield-halved"></i>
+                        </div>
+                        <h4>Secure & Private</h4>
+                        <p class="text-muted small">Your data is encrypted and processed locally where possible. We prioritize your privacy.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section class="py-5 bg-light">
+        <div class="container py-4">
+            <div class="text-center mb-5">
+                <h2 class="mb-3">How It Works</h2>
+                <p class="text-muted">Three simple steps to check your health.</p>
+            </div>
+            <div class="row text-center justify-content-center">
+                <div class="col-md-3">
+                    <div class="d-flex flex-column align-items-center">
+                        <div class="step-number">1</div>
+                        <h5>Upload Image</h5>
+                        <p class="text-muted small">Upload a high-quality image of your blood smear.</p>
+                    </div>
+                </div>
+                <div class="col-md-1 d-none d-md-flex align-items-center justify-content-center text-muted">
+                    <i class="fa-solid fa-arrow-right fa-2x"></i>
+                </div>
+                <div class="col-md-3">
+                    <div class="d-flex flex-column align-items-center">
+                        <div class="step-number">2</div>
+                        <h5>AI Analysis</h5>
+                        <p class="text-muted small">Our AI scans the image for abnormalities in seconds.</p>
+                    </div>
+                </div>
+                <div class="col-md-1 d-none d-md-flex align-items-center justify-content-center text-muted">
+                    <i class="fa-solid fa-arrow-right fa-2x"></i>
+                </div>
+                <div class="col-md-3">
+                    <div class="d-flex flex-column align-items-center">
+                        <div class="step-number">3</div>
+                        <h5>Get Results</h5>
+                        <p class="text-muted small">Receive an instant risk assessment and next steps.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Intro to Cancer Snippet -->
+    <section class="py-5">
+        <div class="container py-4">
+            <div class="row align-items-center">
+                <div class="col-lg-6 order-2 order-lg-1">
+                    <img src="https://placehold.co/600x400/e6f2ff/0A4DAA?text=Medical+Research" alt="Medical Research" class="img-fluid rounded-3">
+                </div>
+                <div class="col-lg-6 order-1 order-lg-2 mb-4 mb-lg-0 ps-lg-5">
+                    <h2 class="mb-3">Understanding Blood Cancer</h2>
+                    <p class="text-muted">
+                        Blood cancers affect the production and function of your blood cells. Early detection is a critical factor in successful treatment. Our tool focuses on identifying markers for leukemia and other related conditions.
+                    </p>
+                    <a href="{% url 'info' %}" class="btn btn-outline-primary mt-2">Read Full Information</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-4">
+                    <h5 class="text-white mb-3"><i class="fa-solid fa-dna me-2"></i>CellScan AI</h5>
+                    <p class="small text-secondary">
+                        Advanced AI-powered blood cell analysis for early cancer detection. Empowering you with knowledge.
+                    </p>
+                </div>
+               
+            </div>
+            <div class="border-top border-secondary mt-5 pt-4 text-center small text-secondary">
+                &copy; 2024 CellScan AI. All rights reserved. For research purposes only. Not a substitute for professional medical advice.
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

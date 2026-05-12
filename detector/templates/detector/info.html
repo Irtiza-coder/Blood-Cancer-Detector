@@ -1,0 +1,204 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Information - CellScan AI</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'detector/css/style.css' %}">
+</head>
+
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'index' %}">
+                <i class="fa-solid fa-dna"></i> CellScan AI
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center">
+                    <li class="nav-item"><a class="nav-link" href="{% url 'index' %}">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'check' %}">Analyze</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="{% url 'info' %}">Information</a></li>
+
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Header -->
+    <div class="bg-light py-5">
+        <div class="container">
+            <h1 class="text-center mb-3">Understanding the Science</h1>
+            <p class="text-center text-muted col-lg-8 mx-auto lead">
+                Learn about blood cancer types, our AI methodology, and the importance of early detection.
+            </p>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container py-5">
+        <div class="row g-5">
+            <!-- Left Sidebar (Navigation) -->
+            <div class="col-lg-3 d-none d-lg-block">
+                <div class="list-group sticky-top" style="top: 100px;">
+                    <a href="#cancer-types" class="list-group-item list-group-item-action">What is Blood Cancer?</a>
+                    <a href="#ai-model" class="list-group-item list-group-item-action">About Our AI Model</a>
+                    <a href="#limitations" class="list-group-item list-group-item-action">Limitations & Disclaimer</a>
+                    <a href="#resources" class="list-group-item list-group-item-action">Resources</a>
+                </div>
+            </div>
+
+            <!-- Content Area -->
+            <div class="col-lg-9">
+                <!-- Section 1: Cancer Types -->
+                <section id="cancer-types" class="mb-5">
+                    <h2 class="mb-4 text-primary"><i class="fa-solid fa-microscope me-2"></i>What is Blood Cancer?</h2>
+                    <p>Blood cancers occur when abnormal blood cells start growing out of control, interrupting the
+                        function of normal blood cells, which fight off infection and produce new blood cells.</p>
+
+                    <div class="row g-4 mt-2">
+                        <div class="col-md-6">
+                            <div class="card h-100 border-0 shadow-sm">
+                                <div class="card-body">
+                                    <h5 class="card-title fw-bold text-dark">Leukemia</h5>
+                                    <p class="card-text text-muted small">A cancer found in your blood and bone marrow,
+                                        caused by the rapid production of abnormal white blood cells. These abnormal
+                                        white blood cells are not able to fight infection and they impair the ability of
+                                        the bone marrow to produce red blood cells and platelets.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card h-100 border-0 shadow-sm">
+                                <div class="card-body">
+                                    <h5 class="card-title fw-bold text-dark">Lymphoma</h5>
+                                    <p class="card-text text-muted small">A type of blood cancer that affects the
+                                        lymphatic system, which removes excess fluids from your body and produces immune
+                                        cells. Lymphocytes are a type of white blood cell that fight infection.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <hr class="my-5 opacity-10">
+
+                <!-- Section 2: AI Model -->
+                <section id="ai-model" class="mb-5">
+                    <h2 class="mb-4 text-primary"><i class="fa-solid fa-brain me-2"></i>About the AI Model</h2>
+                    <p>Our Convolutional Neural Network (CNN) is designed to detect subtle morphological changes in cell
+                        structures that are often indicative of early-stage malignancy.</p>
+
+                    <div class="card bg-light border-0 p-4 mt-4">
+                        <h5 class="mb-3">Performance Metrics</h5>
+                        <div class="row text-center">
+                            <div class="col-4 border-end">
+                                <h3 class="fw-bold text-primary">96.79%</h3>
+                                <div class="small text-muted">Accuracy</div>
+                            </div>
+                            <div class="col-4 border-end">
+                                <h3 class="fw-bold text-secondary">96.86%</h3>
+                                <div class="small text-muted">Precision</div>
+                            </div>
+                            <div class="col-4">
+                                <h3 class="fw-bold text-dark">96.79%</h3>
+                                <div class="small text-muted">Recall</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <h6 class="fw-bold">Dataset</h6>
+                        <p class="small text-muted">The model was trained on the C-NMC (Classification of Normal vs
+                            Malignant Cells) dataset, consisting of over 3000+ microscopic images of
+                            PBMCs.</p>
+                    </div>
+                </section>
+
+                <hr class="my-5 opacity-10">
+
+                <!-- Section 3: Limitations -->
+                <section id="limitations" class="mb-5">
+                    <div class="alert alert-warning border-0 shadow-sm">
+                        <h4 class="alert-heading"><i class="fa-solid fa-triangle-exclamation me-2"></i>Limitations &
+                            Medical Disclaimer</h4>
+                        <p>
+                            CellScan AI is an assistive tool for educational and preliminary screening purposes only. It
+                            is <strong>NOT</strong> a substitute for professional medical diagnosis, advice, or
+                            treatment.
+                        </p>
+                        <hr>
+                        <p class="mb-0 small">
+                        <ul>
+                            <li>The AI may produce false positives or false negatives.</li>
+                            <li>Image quality significantly impacts results. Blurry or stained images may lead to
+                                incorrect classifications.</li>
+                            <li>Always consult a qualified healthcare provider for any health concerns or before making
+                                any medical decisions.</li>
+                        </ul>
+                        </p>
+                    </div>
+                </section>
+
+                <hr class="my-5 opacity-10">
+
+                <!-- Section 4: Resources -->
+                <section id="resources" class="mb-5">
+                    <h2 class="mb-4 text-primary"><i class="fa-solid fa-link me-2"></i>External Resources</h2>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-0">World Health Organization (WHO) - Cancer</h6>
+                                <small class="text-muted">Global statistics and health guidelines.</small>
+                            </div>
+                            <a href="#" class="btn btn-sm btn-outline-primary"><i
+                                    class="fa-solid fa-arrow-up-right-from-square"></i> Visit</a>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-0">American Cancer Society</h6>
+                                <small class="text-muted">Patient support and detailed cancer type information.</small>
+                            </div>
+                            <a href="#" class="btn btn-sm btn-outline-primary"><i
+                                    class="fa-solid fa-arrow-up-right-from-square"></i> Visit</a>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-0">Centers for Disease Control (CDC)</h6>
+                                <small class="text-muted">Public health information and prevention.</small>
+                            </div>
+                            <a href="#" class="btn btn-sm btn-outline-primary"><i
+                                    class="fa-solid fa-arrow-up-right-from-square"></i> Visit</a>
+                        </li>
+                    </ul>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white pt-5 pb-3">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 text-center text-secondary small">
+                    &copy; 2024 CellScan AI. All rights reserved.
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

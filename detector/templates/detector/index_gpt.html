@@ -1,0 +1,171 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analyze - CellScan AI</title>
+
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+    <style>
+        .upload-area {
+            border: 2px dashed #cbd5e1;
+            border-radius: 12px;
+            padding: 3rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .upload-area:hover {
+            border-color: #0d6efd;
+            background-color: #f8fafc;
+        }
+
+        .result-box {
+            background-color: #FAFAFA;
+            border-radius: 12px;
+            border: 1px solid #E5E7EB;
+            min-height: 500px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg sticky-top bg-white shadow-sm">
+    <div class="container">
+        <a class="navbar-brand" href="/">
+            <i class="fa-solid fa-dna"></i> CellScan AI
+        </a>
+    </div>
+</nav>
+
+<!-- MAIN -->
+<div class="container py-5">
+    <div class="row g-5">
+
+        <!-- LEFT: INPUT -->
+        <div class="col-lg-6">
+            <h2 class="mb-4">Upload Sample</h2>
+
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-4">
+
+                    <div class="upload-area mb-4" id="uploadArea">
+                        <i class="fa-solid fa-cloud-arrow-up fa-3x text-primary mb-3"></i>
+                        <h5>Drag & Drop Image Here</h5>
+                        <p class="text-muted small">or click to browse</p>
+
+                        <input type="file" id="fileInput" class="d-none" accept="image/jpeg, image/png">
+                        <div id="fileName" class="fw-bold text-primary mt-2"></div>
+
+                        <img id="previewImage" class="img-fluid mt-3 rounded d-none" style="max-height:200px">
+                    </div>
+
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" id="disclaimerCheck">
+                        <label class="form-check-label small text-muted">
+                            This tool is for research purposes only and not a medical diagnosis.
+                        </label>
+                    </div>
+
+                    <button id="analyzeBtn" class="btn btn-primary w-100 py-2 fs-5" disabled>
+                        Analyze Now
+                    </button>
+
+                    <!-- LOADING -->
+                    <div id="loadingBox" class="text-center mt-3 d-none">
+                        <div class="spinner-border text-primary"></div>
+                        <p class="small text-muted mt-2">Analyzing image...</p>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT: OUTPUT -->
+        <div class="col-lg-6">
+            <h2 class="mb-4">Analysis Results</h2>
+
+            <!-- INITIAL -->
+            <div id="initialOutput" class="result-box text-center p-4">
+                <div>
+                    <i class="fa-solid fa-microscope fa-3x text-muted mb-3"></i>
+                    <p class="text-muted">Awaiting image upload</p>
+                </div>
+            </div>
+
+            <!-- RESULT -->
+            <div id="resultOutput" class="card shadow-sm border-0 d-none">
+                <div class="card-header bg-danger text-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 id="resultTitle" class="mb-0">
+                            <i class="fa-solid fa-triangle-exclamation me-2"></i>AI Finding
+                        </h5>
+                        <span id="resultBadge" class="badge bg-white text-danger">Positive</span>
+                    </div>
+                </div>
+
+                <div class="card-body p-4">
+
+                    <!-- CONFIDENCE -->
+                    <h6 class="fw-bold mb-2">Confidence Score</h6>
+                    <div class="progress mb-4" style="height:22px;">
+                        <div id="confidenceBar"
+                             class="progress-bar progress-bar-striped progress-bar-animated"
+                             style="width:0%">0%</div>
+                    </div>
+
+                    <!-- STAGE -->
+                    <div class="text-center mb-4">
+                        <h5 class="text-muted mb-1">Predicted Class</h5>
+                        <h2 id="stageText" class="fw-bold text-danger">--</h2>
+                    </div>
+
+                    <!-- ACTIONS -->
+                    <div class="alert alert-warning small">
+                        Please consult a medical professional for confirmation.
+                    </div>
+
+                    <button id="downloadBtn" class="btn btn-outline-secondary w-100">
+                        Download Report (PDF)
+                    </button>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+ <footer class="bg-dark text-white mt-auto py-4">
+        <div class="container text-center">
+            <h5 class="mb-3">CellScan AI</h5>
+            <div class="d-flex justify-content-center gap-4 mb-3 small">
+                <a href="#" class="text-secondary text-decoration-none">Privacy Policy</a>
+                <a href="#" class="text-secondary text-decoration-none">Terms of Service</a>
+            </div>
+            <div class="text-secondary small">
+                &copy; 2024 CellScan AI. All rights reserved.
+            </div>
+        </div>
+    </footer>
+<!-- JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{% static 'js/m.js' %}"></script>
+
+</body>
+</html>

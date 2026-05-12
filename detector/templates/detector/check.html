@@ -1,0 +1,190 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analyze - CellScan AI</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'detector/css/style.css' %}">
+    <style>
+        .upload-area {
+            border: 2px dashed #cbd5e1;
+            border-radius: 12px;
+            padding: 3rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .upload-area:hover {
+            border-color: var(--primary-color);
+            background-color: #f8fafc;
+        }
+
+        .result-box {
+            background-color: #FAFAFA;
+            border-radius: 12px;
+            border: 1px solid #E5E7EB;
+            height: 100%;
+            min-height: 500px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .heatmap-overlay {
+            position: relative;
+            display: inline-block;
+        }
+    </style>
+</head>
+
+<body class="d-flex flex-column min-vh-100">
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'index' %}">
+                <i class="fa-solid fa-dna"></i> CellScan AI
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center">
+                    <li class="nav-item"><a class="nav-link" href="{% url 'index' %}">Home</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="{% url 'check' %}">Analyze</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'info' %}">Information</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container py-5">
+        <div class="row g-5">
+            <!-- Left Column: Input -->
+            <div class="col-lg-6 d-flex flex-column">
+                <h2 class="mb-4">Upload Sample</h2>
+                <div class="card shadow-sm border-0 flex-grow-1">
+                    <div class="card-body p-4">
+                        <div class="upload-area mb-4" id="uploadArea">
+                            <i class="fa-solid fa-cloud-arrow-up fa-3x text-primary mb-3"></i>
+                            <h5 class="mb-2">Drag & Drop Image Here</h5>
+                            <p class="text-muted small mb-0">or click to browse files</p>
+                            <p class="text-muted small mt-2">Supported formats: JPG, PNG. Max size: 10MB.</p>
+                            <input type="file" id="fileInput" class="d-none" accept="image/jpeg, image/png">
+                            <div id="fileName" class="fw-bold mt-2 text-primary"></div>
+                            <img id="previewImage" src="" alt="Preview" class="img-fluid mt-3 rounded d-none"
+                                style="max-height: 200px;">
+                        </div>
+
+                        <div class="form-check mb-4">
+                            <input class="form-check-input" type="checkbox" value="" id="disclaimerCheck">
+                            <label class="form-check-label small text-muted" for="disclaimerCheck">
+                                I confirm that I have read the medical disclaimer. I understand this tool is for
+                                research/informational purposes only and is not a clinical diagnosis.
+                            </label>
+                        </div>
+
+                        <button id="analyzeBtn" class="btn btn-primary w-100 py-2 fs-5" disabled>
+                            Analyze Now
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Output -->
+            <div class="col-lg-6 d-flex flex-column">
+                <h2 class="mb-4">Analysis Results</h2>
+
+                <!-- Initial State -->
+                <div id="initialOutput" class="result-box text-center p-5 flex-grow-1">
+                    <div>
+                        <div class="spinner-grow text-secondary mb-3" style="width: 3rem; height: 3rem;" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <h5 class="text-muted">Awaiting Image Upload...</h5>
+                        <p class="text-muted small">Please upload a blood smear image to begin analysis.</p>
+                    </div>
+                </div>
+
+                <!-- Result State (Hidden by default) -->
+                <div id="resultOutput" class="card shadow-sm border-0 d-none flex-grow-1">
+                    <div class="card-header bg-danger text-white py-3">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <h5 class="mb-0"><i class="fa-solid fa-triangle-exclamation me-2"></i>AI Finding: Elevated
+                                Risk</h5>
+                            <span class="badge bg-white text-danger">Positive</span>
+                        </div>
+                    </div>
+                    <div class="card-body p-4">
+                        <!-- Metrics -->
+                        <div class="row text-center mb-4">
+                            <div class="col-6">
+                                <h2 class="text-primary fw-bold">--</h2>
+                                <p class="text-muted small mb-0">Confidence Score</p>
+                            </div>
+                            <div class="col-6">
+                                <h2 class="text-danger fw-bold">--</h2>
+                                <p class="text-muted small mb-0">Predicted Stage</p>
+                            </div>
+                        </div>
+
+                        <!-- Visual XAI -->
+                        <div class="mb-4 text-center">
+                            <label class="form-label fw-bold text-start w-100 mb-2">Visual Analysis:</label>
+                            <div class="heatmap-overlay">
+                                <img src="https://placehold.co/600x400/e6f2ff/0A4DAA?text=Uploaded+Sample"
+                                    alt="Analyzed Sample" class="img-fluid rounded border">
+                            </div>
+                            <p class="text-muted small mt-2 fst-italic">AI analysis complete.</p>
+                        </div>
+
+                        <!-- Next Steps -->
+                        <div class="alert alert-warning border-0 bg-warning-subtle">
+                            <h6 class="alert-heading fw-bold"><i class="fa-solid fa-user-doctor me-2"></i>Recommended
+                                Actions</h6>
+                            <hr>
+                            <ul class="mb-0 small">
+                                <li class="mb-1">Consult a hematologist immediately for clinical verification.</li>
+                                <li class="mb-1">Do not rely solely on this AI result for medical decisions.</li>
+                                <li>Schedule a full blood count (FBC) test.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="mt-auto">
+        <div class="container py-4">
+            <div class="row align-items-center">
+                <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
+                    <span class="text-muted small">&copy; 2024 CellScan AI. Research use only.</span>
+                </div>
+                <div class="col-md-6 text-center text-md-end">
+                    <ul class="list-inline mb-0 small">
+                        <li class="list-inline-item"><a href="#" class="text-muted text-decoration-none">Privacy</a>
+                        </li>
+                        <li class="list-inline-item"><a href="#" class="text-muted text-decoration-none">Terms</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom logic -->
+    <script src="{% static 'detector/js/main.js' %}"></script>
+</body>
+
+</html>
