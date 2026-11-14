@@ -1,4 +1,5 @@
-from django.shortcuts import render,redirect
+from django.shortcuts import render, redirect
+from django.views.decorators.csrf import csrf_exempt
 import os
 import numpy as np
 import tensorflow as tf
@@ -42,6 +43,7 @@ def run_prediction(img_array):
     else:
         return model_obj.predict(img_array)
 
+@csrf_exempt
 def predict_image(request):
     if request.method != 'POST':
         return JsonResponse({'error': 'POST request required'}, status=400)

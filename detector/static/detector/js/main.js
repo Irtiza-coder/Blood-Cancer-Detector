@@ -110,16 +110,24 @@ document.addEventListener('DOMContentLoaded', function () {
         // Create FormData
         const formData = new FormData();
         formData.append('image', currentFile);
-        const csrfToken = getCookie('csrftoken');
+        
+        const csrfInput = document.querySelector('[name=csrfmiddlewaretoken]');
+        const csrfToken = csrfInput ? csrfInput.value : getCookie('csrftoken');
+        const headers = csrfToken ? { 'X-CSRFToken': csrfToken } : {};
 
         fetch('/predict/', {
             method: 'POST',
             body: formData,
-            headers: {
-                'X-CSRFToken': csrfToken
-            }
+            headers: headers
         })
-            .then(response => response.json())
+            .then(async response => {
+                const data = await response.json().catch(() => null);
+                if (!response.ok) {
+                    const msg = (data && data.error) ? data.error : `Server responded with status ${response.status}`;
+                    throw new Error(msg);
+                }
+                return data;
+            })
             .then(data => {
                 if (data.error) {
                     alert('Error: ' + data.error);

@@ -79,6 +79,7 @@
                 <h2 class="mb-4">Upload Sample</h2>
                 <div class="card shadow-sm border-0 flex-grow-1">
                     <div class="card-body p-4">
+                        {% csrf_token %}
                         <div class="upload-area mb-4" id="uploadArea">
                             <i class="fa-solid fa-cloud-arrow-up fa-3x text-primary mb-3"></i>
                             <h5 class="mb-2">Drag & Drop Image Here</h5>
