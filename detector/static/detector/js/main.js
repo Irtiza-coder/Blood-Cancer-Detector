@@ -8,8 +8,12 @@ document.addEventListener('DOMContentLoaded', function () {
     const previewImage = document.getElementById('previewImage');
     const fileNameDisplay = document.getElementById('fileName');
 
+    let currentFile = null;
+
+    // Prevent default drag behaviors on window & drop area
     ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
         uploadArea.addEventListener(eventName, preventDefaults, false);
+        document.body.addEventListener(eventName, preventDefaults, false);
     });
 
     function preventDefaults(e) {
@@ -17,53 +21,75 @@ document.addEventListener('DOMContentLoaded', function () {
         e.stopPropagation();
     }
 
+    // Highlight drop area when dragging over
     ['dragenter', 'dragover'].forEach(eventName => {
-        uploadArea.addEventListener(eventName, () => uploadArea.classList.add('border-primary', 'bg-light'));
+        uploadArea.addEventListener(eventName, () => {
+            uploadArea.classList.add('dragover');
+        }, false);
     });
 
     ['dragleave', 'drop'].forEach(eventName => {
-        uploadArea.addEventListener(eventName, () => uploadArea.classList.remove('border-primary', 'bg-light'));
+        uploadArea.addEventListener(eventName, () => {
+            uploadArea.classList.remove('dragover');
+        }, false);
     });
 
+    // Handle dropped files
     uploadArea.addEventListener('drop', handleDrop, false);
-    uploadArea.addEventListener('click', () => fileInput.click());
-    fileInput.addEventListener('change', handleFiles);
+
+    // Clicking upload area opens file browser
+    uploadArea.addEventListener('click', (e) => {
+        if (e.target !== fileInput) {
+            fileInput.click();
+        }
+    });
+
+    // Handle file selected from file picker
+    fileInput.addEventListener('change', function (e) {
+        if (e.target.files && e.target.files.length > 0) {
+            processFile(e.target.files[0]);
+        }
+    });
 
     function handleDrop(e) {
         const dt = e.dataTransfer;
-        const files = dt.files;
-        handleFiles({ target: { files: files } });
+        if (dt && dt.files && dt.files.length > 0) {
+            processFile(dt.files[0]);
+            try {
+                fileInput.files = dt.files;
+            } catch (err) {
+                // Ignore if browser prevents direct assignment
+            }
+        }
     }
 
-    function handleFiles(e) {
-        const files = e.target.files;
-        if (files.length > 0) {
-            const file = files[0];
-            if (file.type.startsWith('image/')) {
-                fileNameDisplay.textContent = `Selected: ${file.name}`;
+    function processFile(file) {
+        if (!file) return;
 
-                // UPDATE: Change status text when image is selected
-                const statusTitle = initialOutput.querySelector('h5');
-                if (statusTitle) statusTitle.textContent = "Awaiting Analysis Result";
+        if (file.type.startsWith('image/')) {
+            currentFile = file;
+            fileNameDisplay.textContent = `Selected: ${file.name}`;
 
-                checkEnableButton();
+            const statusTitle = initialOutput.querySelector('h5');
+            if (statusTitle) statusTitle.textContent = "Awaiting Analysis Result";
 
-                const reader = new FileReader();
-                reader.onload = function (e) {
-                    previewImage.src = e.target.result;
-                    previewImage.classList.remove('d-none');
-                }
-                reader.readAsDataURL(file);
-            } else {
-                alert('Please upload an image file.');
-            }
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                previewImage.src = e.target.result;
+                previewImage.classList.remove('d-none');
+            };
+            reader.readAsDataURL(file);
+
+            checkEnableButton();
+        } else {
+            alert('Please upload a valid image file (JPG or PNG).');
         }
     }
 
     disclaimerCheck.addEventListener('change', checkEnableButton);
 
     function checkEnableButton() {
-        if (fileInput.files.length > 0 && disclaimerCheck.checked) {
+        if (currentFile && disclaimerCheck.checked) {
             analyzeBtn.disabled = false;
         } else {
             analyzeBtn.disabled = true;
@@ -72,13 +98,18 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Analyze Logic
     analyzeBtn.addEventListener('click', function () {
-        // Show loading
+        if (!currentFile) {
+            alert('Please select or drop an image first.');
+            return;
+        }
+
+        // Show loading spinner
         analyzeBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Analyzing...';
         analyzeBtn.disabled = true;
 
         // Create FormData
         const formData = new FormData();
-        formData.append('image', fileInput.files[0]);
+        formData.append('image', currentFile);
         const csrfToken = getCookie('csrftoken');
 
         fetch('/predict/', {
@@ -102,23 +133,17 @@ document.addEventListener('DOMContentLoaded', function () {
                 resultOutput.classList.remove('d-none');
 
                 // Update UI with Data
-                // 1. Confidence
                 const confidenceScore = document.querySelector('#resultOutput h2.text-primary');
                 if (confidenceScore) confidenceScore.innerText = data.confidence;
 
-                // 2. Result
                 const resultText = document.querySelector('#resultOutput h2.text-danger');
                 if (resultText) resultText.innerText = data.result;
 
-                // 3. Image (Correctly show the uploaded one)
                 const resultImage = document.querySelector('#resultOutput img.img-fluid');
-                if (resultImage) {
-                    const reader = new FileReader();
-                    reader.onload = function (e) { resultImage.src = e.target.result; }
-                    reader.readAsDataURL(fileInput.files[0]);
+                if (resultImage && previewImage.src) {
+                    resultImage.src = previewImage.src;
                 }
 
-                // 4. Update Badge/Status Text
                 const statusBadge = document.querySelector('#resultOutput .badge');
                 const statusTitle = document.querySelector('#resultOutput .card-header h5');
 
@@ -134,7 +159,6 @@ document.addEventListener('DOMContentLoaded', function () {
                     document.querySelector('.card-header').className = 'card-header bg-danger text-white py-3';
                 }
 
-                // Reset button
                 analyzeBtn.innerHTML = 'Analyze Now';
                 analyzeBtn.disabled = false;
             })

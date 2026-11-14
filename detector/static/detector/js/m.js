@@ -3,136 +3,56 @@ const uploadArea = document.getElementById("uploadArea");
 const fileInput = document.getElementById("fileInput");
 const fileName = document.getElementById("fileName");
 const previewImage = document.getElementById("previewImage");
-
 const disclaimerCheck = document.getElementById("disclaimerCheck");
 const analyzeBtn = document.getElementById("analyzeBtn");
 
-const loadingBox = document.getElementById("loadingBox");
+let currentFile = null;
 
-const initialOutput = document.getElementById("initialOutput");
-const resultOutput = document.getElementById("resultOutput");
+['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+    uploadArea.addEventListener(eventName, e => {
+        e.preventDefault();
+        e.stopPropagation();
+    }, false);
+});
 
-const confidenceBar = document.getElementById("confidenceBar");
-const stageText = document.getElementById("stageText");
-const resultTitle = document.getElementById("resultTitle");
-const resultBadge = document.getElementById("resultBadge");
+['dragenter', 'dragover'].forEach(eventName => {
+    uploadArea.addEventListener(eventName, () => uploadArea.classList.add("dragover"), false);
+});
 
-const downloadBtn = document.getElementById("downloadBtn");
+['dragleave', 'drop'].forEach(eventName => {
+    uploadArea.addEventListener(eventName, () => uploadArea.classList.remove("dragover"), false);
+});
 
-// ===============================
-// UPLOAD & PREVIEW
-// ===============================
-uploadArea.addEventListener("click", () => {
-    fileInput.click();
+uploadArea.addEventListener("drop", e => {
+    if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+        handleFile(e.dataTransfer.files[0]);
+    }
+});
+
+uploadArea.addEventListener("click", e => {
+    if (e.target !== fileInput) fileInput.click();
 });
 
 fileInput.addEventListener("change", () => {
-    const file = fileInput.files[0];
-    if (!file) return;
-
-    fileName.innerText = file.name;
-    previewImage.src = URL.createObjectURL(file);
-    previewImage.classList.remove("d-none");
-
-    checkReady();
+    if (fileInput.files.length > 0) {
+        handleFile(fileInput.files[0]);
+    }
 });
 
-// ===============================
-// ENABLE ANALYZE BUTTON
-// ===============================
+function handleFile(file) {
+    if (!file || !file.type.startsWith("image/")) {
+        alert("Please select a valid image.");
+        return;
+    }
+    currentFile = file;
+    fileName.innerText = "Selected: " + file.name;
+    previewImage.src = URL.createObjectURL(file);
+    previewImage.classList.remove("d-none");
+    checkReady();
+}
+
 disclaimerCheck.addEventListener("change", checkReady);
 
 function checkReady() {
-    analyzeBtn.disabled = !(fileInput.files.length && disclaimerCheck.checked);
+    analyzeBtn.disabled = !(currentFile && disclaimerCheck.checked);
 }
-
-// ===============================
-// ANALYZE IMAGE
-// ===============================
-analyzeBtn.addEventListener("click", () => {
-    const file = fileInput.files[0];
-    if (!file) return;
-
-    const formData = new FormData();
-    formData.append("image", file);
-
-    // UI states
-    analyzeBtn.disabled = true;
-    loadingBox.classList.remove("d-none");
-
-    fetch("/predict/", {
-            method: "POST",
-            body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-            showResult(data.result, data.confidence);
-        })
-        .catch(error => {
-            console.error(error);
-            alert("Prediction failed. Please try again.");
-        })
-        .finally(() => {
-            analyzeBtn.disabled = false;
-            loadingBox.classList.add("d-none");
-        });
-});
-
-// ===============================
-// SHOW RESULT
-// ===============================
-function showResult(result, confidence) {
-    initialOutput.classList.add("d-none");
-    resultOutput.classList.remove("d-none");
-
-    // Confidence bar
-    confidenceBar.style.width = confidence;
-    confidenceBar.innerText = confidence;
-
-    // Stage text
-    stageText.innerText = result;
-
-    const header = resultOutput.querySelector(".card-header");
-
-    // BENIGN (NEGATIVE)
-    if (result === "Benign") {
-        header.classList.remove("bg-danger");
-        header.classList.add("bg-success");
-
-        stageText.classList.remove("text-danger");
-        stageText.classList.add("text-success");
-
-        resultBadge.innerText = "Negative";
-        resultBadge.classList.remove("text-danger");
-        resultBadge.classList.add("text-success");
-
-        resultTitle.innerHTML =
-            `<i class="fa-solid fa-circle-check me-2"></i>AI Finding: No Cancer Detected`;
-    }
-    // CANCER (POSITIVE)
-    else {
-        header.classList.remove("bg-success");
-        header.classList.add("bg-danger");
-
-        stageText.classList.remove("text-success");
-        stageText.classList.add("text-danger");
-
-        resultBadge.innerText = "Positive";
-        resultBadge.classList.remove("text-success");
-        resultBadge.classList.add("text-danger");
-
-        resultTitle.innerHTML =
-            `<i class="fa-solid fa-triangle-exclamation me-2"></i>AI Finding: Cancer Detected`;
-    }
-}
-
-// ===============================
-// DOWNLOAD PDF REPORT
-// ===============================
-downloadBtn.addEventListener("click", () => {
-    const result = stageText.innerText;
-    const confidence = confidenceBar.innerText;
-
-    window.location.href =
-        `/download-report/?result=${encodeURIComponent(result)}&confidence=${encodeURIComponent(confidence)}`;
-});
